@@ -7,11 +7,30 @@
 <body>
 	<p>Chatea bb</p>
 	<form>
-	<p><input type="text" name="msg" id="msg" />
+	<p><input type="text" name="user" id="user" placeholder="Usuario"/><input type="text" name="msg" id="msg" placeholder="Mensaje"/>
 	<button type="submit">Send</button></p>
 	</form>
 	<div id="chat">
 	</div>
+
+	<script>
+	const refresh_time = 2000; //en milisegundos
+		srtInterval(() => {
+		
+		fetch("/chat")
+				.then( (response) => response.json() ) //mira si los datos son JSON y lo pasa a JS
+				.then( (data) => {
+					let lista = '';
+					for (let i = 0; i < data.length; i++){
+						lista += "<li>"+data[i].user+": "+data[i].msg+"</li>";
+					}
+
+					//metemos en el div con id "chat" el valor de lista (user + mensaje)
+					document.getElementById("chat").innerHTML = "<ul">+lista+"</ul>";
+				});
+	  	
+		}, refresh_time);
+	</script>
 </body>
 
 </html>
