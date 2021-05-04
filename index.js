@@ -52,6 +52,43 @@ http.createServer( (request, response) => {
 
 		return;
 	}
+	
+	if (request.url == "/recent"){
+	
+		//registros en la base de datos
+		const estimated_count = chat_db.collection("chat").estimatedDocumentCount();
+
+		estimated_count.then( (count) => {
+	
+			//max que queremos ver
+			const MAX = 5;
+		
+			//puntero a los datos
+			//sort -> es un metodo interno para ordenar los campos
+			//con un campo existente o con "$natural" (en el orden de inserccion)
+			// 1 lo hara ascendente "en orden" / -1 lo hara descendente "al reves"
+			//limit -> devolviendo los ultimos 5 resultados
+			let cursor = chat_db.collection("chat").find({}, {
+				skip: count - MAX,
+				limit: MAX, 
+				sort: { $natural:1 }
+				});
+
+			//para recorrer los datos que nos ha devuelto el .find
+			cursor.toArray().then( (data) => {
+
+				//error 200 es 'todo encontrado' es decir esta bien
+				response.writeHead(200, {'Content-Type': 'text/plain'});			
+			
+				response.write( JSON.stringify(data) );
+
+				response.end();
+			});
+			
+		});
+
+		return;
+	}
 
 	if (request.url == "/submit"){
 		console.log("Envío de datos");
