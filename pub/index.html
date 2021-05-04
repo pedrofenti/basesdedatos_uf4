@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8" />
 <title>ChatBB</title>
 </head>
 
 <body>
 	<p>Chatea bb</p>
-	<form>
+	<form id="chat-form">
 	<p><input type="text" name="user" id="user" placeholder="Usuario"/><input type="text" name="msg" id="msg" placeholder="Mensaje"/>
 	<button type="submit">Send</button></p>
 	</form>
@@ -14,8 +15,28 @@
 	</div>
 
 	<script>
-	const refresh_time = 2000; //en milisegundos
-		srtInterval(() => {
+				const refresh_time = 500; //en milisegundos
+
+	document.getElementById("chat-form").addEventListener('submit', e => {
+		e.preventDefault();
+
+		let user = document.getElementById("user").value;
+		let msg = document.getElementById("msg").value;
+
+		fetch("/submit", {
+			method: "POST",
+			headers: {
+				'Content-Type': 'text/json'
+			},
+			body: JSON.stringify({
+				chat_user: user,
+				chat_msg: msg
+			})
+		});
+
+	});
+
+		setInterval(() => {
 		
 		fetch("/chat")
 				.then( (response) => response.json() ) //mira si los datos son JSON y lo pasa a JS
@@ -26,11 +47,10 @@
 					}
 
 					//metemos en el div con id "chat" el valor de lista (user + mensaje)
-					document.getElementById("chat").innerHTML = "<ul">+lista+"</ul>";
+							document.getElementById("chat").innerHTML = "<ul>"+lista+"</ul>";
 				});
 	  	
 		}, refresh_time);
 	</script>
 </body>
-
 </html>
