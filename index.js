@@ -33,11 +33,18 @@ console.log("Inicializando servidor chat");
 let public_files = new node_static.Server("pub");
 
 http.createServer( (request, response) => {
-	if (request.url == "/chat"){
-		//console.log("Entrando en el chat");
+	//si empieza por /chat entrara aqui
+	if (request.url.startsWith("/chat")){
+		
+		//se retorna la url dividida en arrays de string x cada "="
+		let info = request.url.split("=");
+		//console.log(info[1]);	
+		
+		//creo el objeto que buscare en la base de datos
+		let query = {date: {$gt: parseInt(info[1])} };
 		
 		//puntero a los datos
-		let cursor = chat_db.collection("chat").find({});
+		let cursor = chat_db.collection("chat").find(query);
 
 		cursor.toArray().then( (data) => {
 			//console.log(data);
